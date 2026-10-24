@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Churn Predictor</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; max-width: 760px; margin: 30px auto; padding: 0 16px; background: #f6f7f9; }
+    h1 { font-size: 22px; }
+    form { background: #fff; padding: 20px; border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+    label { font-size: 13px; color: #444; display: flex; flex-direction: column; gap: 4px; }
+    input, select { padding: 7px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    button { grid-column: span 2; padding: 11px; font-size: 16px; border: 0; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; }
+    #result { margin-top: 18px; padding: 18px; border-radius: 10px; font-size: 18px; display: none; }
+    .high { background: #fde2e4; } .medium { background: #fff3cd; } .low { background: #dcfce7; }
+  </style>
+</head>
+<body>
+  <h1>Customer Churn Predictor</h1>
+  <form id="customer-form">
+    {% for col in num_cols %}
+      <label>{{ col }}
+        <input type="number" name="{{ col }}" step="any" min="0" required>
+      </label>
+    {% endfor %}
+    {% for col, values in options.items() %}
+      <label>{{ col }}
+        <select name="{{ col }}">
+          {% for v in values %}<option>{{ v }}</option>{% endfor %}
+        </select>
+      </label>
+    {% endfor %}
+    <button type="submit">Predict churn</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("customer-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const customer = Object.fromEntries(new FormData(e.target));   // form → JSON
+      const res = await fetch("/predict", {                          // same API endpoint
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(customer),
+      });
+      const data = await res.json();
+      const box = document.getElementById("result");
+      box.style.display = "block";
+      if (!res.ok) { box.className = ""; box.textContent = "Error: " + data.error; return; }
+      box.className = data.risk;
+      box.innerHTML = `<b>Churn probability: ${(data.churn_probability * 100).toFixed(1)}%</b><br>
+                       Risk: ${data.risk.toUpperCase()} — ${data.will_churn ? "likely to churn" : "likely to stay"}`;
+    });
+  </script>
+</body>
+</html>

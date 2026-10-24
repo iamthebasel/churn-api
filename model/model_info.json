@@ -1,0 +1,34 @@
+{
+  "threshold": 0.4,
+  "features": [
+    "Tenure Months",
+    "Monthly Charges",
+    "Gender",
+    "Senior Citizen",
+    "Partner",
+    "Dependents",
+    "Phone Service",
+    "Multiple Lines",
+    "Internet Service",
+    "Online Security",
+    "Online Backup",
+    "Device Protection",
+    "Tech Support",
+    "Streaming TV",
+    "Streaming Movies",
+    "Contract",
+    "Paperless Billing",
+    "Payment Method"
+  ],
+  "num_cols": [
+    "Tenure Months",
+    "Monthly Charges"
+  ],
+  "test_metrics": {
+    "accuracy": 0.784,
+    "precision": 0.58,
+    "recall": 0.666,
+    "f1": 0.62
+  },
+  "model": "LogisticRegression"
+}
